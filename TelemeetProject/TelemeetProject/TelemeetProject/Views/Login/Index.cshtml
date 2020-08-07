@@ -1,0 +1,80 @@
+﻿@model TelemeetProject.Models.User
+@{
+    ViewData["Title"] = "Log in";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form asp-action="Login" id="loginForm" method="post">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col">
+                                <center>
+                                    <h3>Login To Account</h3>
+                                </center>
+                            </div>
+                        </div>
+
+                        @*line*@
+                        <div class="row">
+                            <div class="col">
+                                <hr>
+                            </div>
+                        </div>
+
+                        @*email*@
+                        <div class="row">
+                            <div class="col">
+                                <label>Email</label>
+                                <div class="form-group">
+                                    <input asp-for="user_email" id="Text1" type="email" class="form-control" placeholder="Email" required/>
+                                    <span class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*password*@
+                        <div class="row">
+                            <div class="col">
+                                <label>Password</label>
+                                <div class="form-group">
+                                    <input asp-for="user_password" type="password" id="password" class="form-control" data-toggle="password" placeholder="Password" required/>
+                                    <span class="text-danger"></span>
+                                </div>
+
+                                @*show password*@
+                                <script>
+                                    $('#password').password();
+                                </script>
+
+                                <div class="form-group">
+                                    <button type="submit" value="Login" class="btn btn-primary btn-block">Sign In</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <br />
+                <center> Don't have an account? <a href="@Url.Action("Index", "Register")">Sign Up</a></center>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}
+
+@{
+    if (TempData["msg"] != null)
+    {
+        <script>
+            alert('@TempData["msg"]');
+        </script>
+    }
+}

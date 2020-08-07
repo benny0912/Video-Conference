@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelemeetProject", "TelemeetProject\TelemeetProject.csproj", "{5E814E5A-52FA-4D0E-A711-91D19BDF7F45}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E814E5A-52FA-4D0E-A711-91D19BDF7F45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E814E5A-52FA-4D0E-A711-91D19BDF7F45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E814E5A-52FA-4D0E-A711-91D19BDF7F45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E814E5A-52FA-4D0E-A711-91D19BDF7F45}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BB59F5D6-7D93-44D9-8BC6-EF6D915D0F2C}
+	EndGlobalSection
+EndGlobal

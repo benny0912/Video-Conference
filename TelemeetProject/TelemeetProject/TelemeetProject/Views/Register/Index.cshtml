@@ -1,0 +1,119 @@
+﻿@model TelemeetProject.Models.User
+@{
+    ViewData["Title"] = "Sign up";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form asp-action="Register" id="registerForm" method="post">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col">
+                                <center>
+                                    <h3>Create Account</h3>
+                                </center>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <hr>
+                            </div>
+                        </div>
+
+
+
+                        @*email*@
+                        <div class="row">
+                            <div class="col">
+                                <label>Email</label>
+                                <div class="form-group">
+                                    <input asp-for="user_email" id="userEmail" type="text" class="form-control" placeholder="Email" />
+                                    <span  class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*First Name*@
+                        <div class="row">
+                            <div class="col">
+                                <label >First Name</label>
+                                <div class="form-group">
+                                    <input asp-for="user_first_name" id="userName" type="text" class="form-control" placeholder="First Name" />
+                                    <span class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*Last Name*@
+                        <div class="row">
+                            <div class="col">
+                                <label>Last Name</label>
+                                <div class="form-group">
+                                    <input asp-for="user_last_name" id="userName" type="text" class="form-control" placeholder="Last Name" />
+                                    <span class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*password*@
+                        <div class="row">
+                            <div class="col">
+                                <label>Password</label>
+                                <div class="form-group">
+                                    <input asp-for="user_password" type="password" id="password" class="form-control" data-toggle="password" placeholder="Password" />
+                                    <span class="text-danger"></span>
+                                </div>
+
+                                <label>Confirm Password</label>
+                                <div class="form-group">
+                                    <input id="password" type="password" class="form-control" data-toggle="password" placeholder="Confirm Password" />
+                                    <span class="text-danger"></span>
+                                </div>
+
+
+                                @*show password*@
+                                <script>
+                                    $('#password').password();
+                                </script>
+
+                                <div class="form-group">
+                                    <button type="submit" id="btnSignIn" class="btn btn-primary btn-block">Sign Up</button>
+                                </div>
+
+                                <div class="form-check">
+                                    <input type="checkbox" name="checkBox" id="checkBox" required />
+                                    I acknowledge that my information will be used in accordance with the
+                                    <a href="#">Privacy Policy</a> and <a href="#">Cookie Policy</a>.
+                                    <span class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <center> Have an account? <a href="@Url.Action("Index", "Login")">Sign in</a></center>
+
+            </div>
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+@{
+    if(TempData["msg"] != null)
+    {
+        <script>
+            alert('@TempData["msg"]');
+        </script>
+    }
+
+}

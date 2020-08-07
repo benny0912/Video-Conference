@@ -1,0 +1,191 @@
+﻿@model TelemeetProject.Models.RoomModel
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row my-3">
+        <div class="col-lg-3">
+            <div class="my-2">
+                <div id="no-image" style="background-color: grey; height: 150px; display: none; align-items: center;">
+                    <p style="width: 247.5px; position: absolute; text-align: center;">No Image</p>
+                </div>
+                <video id="video" style="display: none;">Video stream not available.</video>
+                <canvas id="canvas" style="display: inline;"></canvas>
+            </div>
+            <ul class="nav nav-tabs list-group">
+                <li><a href="#select_camera" data-toggle="tab" class="list-group-item">Select Camera</a></li>
+                <li><a href="#create_room" data-toggle="tab" class="list-group-item">Create Room</a></li>
+                <li><a href="#join_room" data-toggle="tab" class="list-group-item">Join Room</a></li>
+                <li><a href="#update_profile" data-toggle="tab" class="list-group-item">Update Profile</a></li>
+                @if (HttpContextAccessor.HttpContext.Session.GetString("userRole") != null && HttpContextAccessor.HttpContext.Session.GetString("userRole").Equals("admin"))
+                {
+                    <li><a href="#administration" data-toggle="tab" class="list-group-item">Administration</a></li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-9">
+            <div id="myTabContent" class="tab-content">
+                <!-- Home Tab -->
+                <div class="tab-pane active in" id="home">
+
+                </div>
+
+                <!-- Select Camera Tab -->
+                <div class="tab-pane fade" id="select_camera">
+                    <div class="container">
+                        <div class="camera_selection">
+                        </div>
+                        <br />
+                        <script>
+                            //camera radio button selection
+                            const cameraSelection = document.querySelector('.camera_selection');
+
+                            const getCameraSelection = async () => {
+                                const devices = await navigator.mediaDevices.enumerateDevices();
+                                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                                const options = videoDevices.map(videoDevice => {
+                                    return `<input type="radio" id="webcam" name="webcam" value="${videoDevice.deviceId}"><label>${videoDevice.label}</label><br>`;
+                                });
+                                cameraSelection.innerHTML = options.join("");
+                            };
+
+                            getCameraSelection();
+                        </script>
+                    </div>
+                </div>
+
+                <!-- Create Room Tab -->
+                <div class="tab-pane fade" id="create_room">
+                    <div class="container">
+                        <h3>Create Room</h3>
+                        <form asp-action="CreateRoom" method="post">
+                            <label>Room Name</label>
+                            <div class="form-group">
+                                <input asp-for="room_name" id="createRoomName" type="text" class="form-control" placeholder="Room Name" />
+                                <span class="text-danger"></span>
+                            </div>
+
+                            <label>Password</label>
+                            <div class="form-group">
+                                <input asp-for="room_password" id="createRoomPassword" class="form-control"
+                                       type="password" data-toggle="password" placeholder="Password" />
+                                <span class="text-danger"></span>
+                            </div>
+                            <button type="submit" value="Create" class="btn btn-primary btn-lg"> Create </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Join Room Tab -->
+                <div class="tab-pane fade" id="join_room">
+                    <div class="container">
+                        <h3>Join Room</h3>
+                        <form method="post" asp-action="JoinRoom">
+                            <label>Room ID</label>
+                            <div class="form-group">
+                                <input asp-for="room_name" id="joinRoomRoom" type="text" class="form-control" placeholder="Room Name" required />
+                                <span class="text-danger"></span>
+                            </div>
+                            <label>Password</label>
+                            <div class="form-group">
+                                <input asp-for="room_password" id="joinRoomPassword" class="form-control"
+                                       type="password" data-toggle="password" placeholder="Password" required />
+                                <span class="text-danger"></span>
+                            </div>
+                            <button type="submit" value="Join" class="btn btn-primary btn-lg"> Join </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Update Profile Tab -->
+                <div class="tab-pane fade" id="update_profile">
+                    <div class="container">
+                        <h3>Update Profile</h3>
+                        <form method="post">
+                            <label>Email</label>
+                            <div class="form-group">
+                                <input id="user_email_profile" type="email" class="form-control" placeholder="Email" required />
+                                <span class="text-danger"></span>
+                            </div>
+                            <label>First Name</label>
+                            <div class="form-group">
+                                <input id="user_firstname_profile" type="text" class="form-control" placeholder="First Name" />
+                                <span class="text-danger"></span>
+                            </div>
+                            <label>Last Name</label>
+                            <div class="form-group">
+                                <input id="user_lastname_profile" type="text" class="form-control" placeholder="Last Name" />
+                                <span class="text-danger"></span>
+                            </div>
+                            <label>Password</label>
+                            <div class="form-group">
+                                <input id="user_password_profile" class="form-control"
+                                       type="password" data-toggle="password" placeholder="Password" required />
+                                <span class="text-danger"></span>
+                            </div>
+                            <button id="update_profile_button" onclick="updateProfile()" class="btn btn-primary btn-lg">Update</button>
+                        </form>
+                    </div>
+                </div>
+
+                @if (HttpContextAccessor.HttpContext.Session.GetString("userRole").Equals("admin"))
+                {
+                    <!-- Administration Tab -->
+                    <div class="tab-pane fade" id="administration">
+                        <div class="container">
+                            <ul class="nav nav-tabs list-group list-group-horizontal">
+                                <li><a href="#user_management" data-toggle="tab" class="list-group-item">User Management</a></li>
+                                <li><a href="#activity_log" data-toggle="tab" class="list-group-item">Activity Log</a></li>
+                                <li><a href="#settings" data-toggle="tab" class="list-group-item">Settings</a></li>
+                            </ul>
+
+                            <div id="myTabContent" class="tab-content">
+                                <!-- User Management Tab -->
+                                <div class="tab-pane active in" id="user_management">
+                                    <div class="container">
+                                        <table id="main_user_table" class="display" style="width:100%"></table>
+                                    </div>
+                                </div>
+
+                                <!-- Activity Log Tab -->
+                                <div class="tab-pane fade" id="activity_log">
+                                    <div class="container">
+                                        <table id="main_activity_table" class="display" style="width:100%"></table>
+                                    </div>
+                                </div>
+
+                                <!-- Settings Tab -->
+                                <div class="tab-pane fade" id="settings">
+                                    <div class="container">
+                                        <label> Time: </label>
+                                        <input type="number" id="input_time" value="" required/>                                       
+                                        <button id="update_time_button" onclick="updateTime()" class="btn btn-primary btn-lg">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@{
+    if (TempData["msg"] != null)
+    {
+        <script>
+            alert('@TempData["msg"]');
+        </script>
+    }
+}
+
+@section Scripts{
+    <script src="~/js/IndexCam.js" type="text/javascript"></script>
+}

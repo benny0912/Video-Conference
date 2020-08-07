@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TelemeetProject</title>
+
+    @* Bootstrap css*@
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    @* Data Table css*@
+    <link href="~/datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
+    @* Custom css*@
+    <link rel="stylesheet" href="~/css/site.css" />
+    
+</head>
+<body>
+    <header>
+        @await Html.PartialAsync("~/Views/Shared/_NavBarPartialView.cshtml")
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2020 - Telemeet</a>
+        </div>
+    </footer>
+
+
+
+    @*popper js*@
+    <script src="~/lib/bootstrap/dist/js/popper.min.js"></script>
+    @*bootstrap show password*@
+    <script src="~/lib/bootstrap/dist/js/bootstrap-show-password.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    @*datatable js*@
+    <script src="~/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    @* SignalR js *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.3/signalr.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(() => {
+            let connection = new signalR.HubConnectionBuilder().withUrl("/signalServer").build();
+
+            connection.start();
+
+            connection.on("refreshUsers", function () {
+                loadData();
+            });
+
+
+            function loadData() {
+                var htmlText = '';
+                $.ajax({
+                    url: '/Room/GetUsers',
+                    method: 'GET',
+                    success: (result) => {
+                        $.each(result, (k, v) => {
+                            htmlText = htmlText + `<div class="col-lg-3" >
+                                                                    <img src="${v.user_image}" alt="..." class="img-thumbnail" data-toggle="tooltip" data-placement="bottom" title="${v.user_first_name}">
+                                                               </div>`
+                        });
+
+                        $("#userCardView").html(htmlText);
+                    },
+                    error: (error) => {
+                        console.log(error);
+                    }
+                });
+            }
+
+        });
+
+        var $userEmailProfile = $('#user_email_profile');
+        var $userFirstnameProfile = $('#user_firstname_profile');
+        var $userLastnameProfile = $('#user_lastname_profile');
+        var $userPasswordProfile = $('#user_password_profile');
+
+        function copyToClipboard(roomid, roompass) {
+            var $temp = $("<input>");
+            $("body").append($temp);
+            var url = 'https://localhost:5001/Room/JoinRoom?roomId=' + roomid + '&roomPass=' + roompass;
+            console.log(url);
+            $temp.val(url).select();
+            document.execCommand("copy");
+            $temp.remove();
+        }
+
+        function updateProfile() {
+            var userEmail = $userEmailProfile.val();
+            var userFirstName = $userFirstnameProfile.val();
+            var userLastnameProfile = $userLastnameProfile.val();
+            var userPassword = $userPasswordProfile.val();
+            console.log(userPassword);
+            if (userPassword) {
+                $.ajax({
+                    url: 'Main/UpdateProfile',
+                    type: 'POST',
+                    data: {
+                        user_email: userEmail,
+                        user_password: userPassword,
+                        user_first_name: userFirstName,
+                        user_last_name: userLastnameProfile
+                    },
+                    success: function (result) {
+                        if (result.status) {
+                            alert(result.message);
+                            $userEmailProfile.val(`${result.userEmail}`);
+                            $userFirstnameProfile.val(`${result.userFirstName}`);
+                            $userLastnameProfile.val(`${result.userLastName}`);
+                            $userPasswordProfile.val('');
+                        } else {
+                            alert(result.message);
+                        }
+                        
+                    },
+                    error: function (err) {
+                        alert(err);
+                    }
+                });
+            }
+
+        }
+
+       
+
+        var $mainUserTable = $('#main_user_table');
+        var $mainActivityTable = $('#main_activity_table');
+
+        //onchange
+        $(document).ready(function () {
+            
+            $.ajax({
+                url: '/Main/GetUserInfo',
+                type: 'GET',
+                success: function (result) {
+                    $userEmailProfile.val(result.user_email);
+                    $userFirstnameProfile.val(result.user_first_name);
+                    $userLastnameProfile.val(result.user_last_name);
+                },
+                error: function (err) {
+                }
+            });
+
+            $mainUserTable.DataTable({
+                ajax: {
+                    url: '/Main/GetAllUsers',
+                    dataSrc: ''
+                },
+                columns: [
+                    {
+                        title: 'Email',
+                        data: 'user_email'
+                    },
+                    {
+                        title: 'Date Created',
+                        data: 'date_created'
+                    },
+                    {
+                        title: 'Last Signed In',
+                        data: 'signed_in'
+                    },
+                    {
+                        title: 'Last Room',
+                        data: 'last_room'
+                    },
+                    {
+                        title: 'Role',
+                        data: 'user_role'
+                    }
+                ]
+            });
+
+            $mainActivityTable.DataTable({
+                ajax: {
+                    url: '/Main/GetAllActivities',
+                    dataSrc: ''
+                },
+                columns: [
+                    {
+                        title: 'Date & Time',
+                        data: 'last_activity'
+                    },
+                    {
+                        title: 'First Name',
+                        data: 'user_first_name'
+                    },
+                    {
+                        title: 'Last Name',
+                        data: 'user_last_name'
+                    },
+                    {
+                        title: 'Activity Type',
+                        data: 'activity_type'
+                    },
+                    {
+                        title: 'Activity Details',
+                        data: 'activity_details'
+                    }
+                ]
+            });
+        });
+
+        $(window).bind("beforeunload", function () {
+            $.ajax({
+                url: '/Room/WebPageClose',
+                type: 'POST',
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (err) {
+                }
+            });
+        });
+
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
